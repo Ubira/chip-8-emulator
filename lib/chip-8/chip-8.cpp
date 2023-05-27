@@ -27,8 +27,6 @@ void Chip8::emulateCycle()
     // Decode opcode
     switch (opcode_ & 0xF000)
     {
-        // Some opcodes //
-
     case 0xA000: // ANNN: Sets I to the address NNN
         // Execute opcode
         index_register = opcode_ & 0x0FFF;
@@ -58,6 +56,50 @@ void Chip8::emulateCycle()
             break;
         }
         break;
+
+    case 0xD000:
+    {
+        uint8_t x = gen_purpose_reg_v[(opcode_ & 0x0F00) >> 8];
+        uint8_t y = gen_purpose_reg_v[(opcode_ & 0x00F0) >> 4];
+        uint8_t height = opcode_ & 0x000F;
+        uint8_t pixel;
+
+        gen_purpose_reg_v[0xF] = 0;
+
+        for (int yline = 0; yline < height; yline++)
+        {
+            pixel = memory_[index_register + yline];
+            for (int xline = 0; xline < 8; xline++)
+            {
+                if ((pixel & (0x80 >> xline)) != 0)
+                {
+                    if (gfx[(x + xline + ((y + yline) * 64))] == 1)
+                        gen_purpose_reg_v[0xF] = 1;
+                    gfx[x + xline + ((y + yline) * 64)] ^= 1;
+                }
+            }
+        }
+        drawFlag = true;
+        program_counter += 2;
+    }
+    break;
+
+    case 0xE000:
+        switch (opcode_ & 0x00FF)
+        {
+        // EX9E: Skips the next instruction
+        // if the key stored in VX is pressed
+        case 0x009E:
+            if (key[gen_purpose_reg_v[(opcode_ & 0x0F00) >> 8]] != 0)
+                program_counter += 4;
+            else
+                program_counter += 2;
+            break;
+
+        default:
+            printf("Unknown opcode [0xE000]: 0x%X\n", opcode_);
+            break;
+        }
 
     case 0xF000:
         switch (opcode_ & 0x00FF)
