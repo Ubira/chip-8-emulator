@@ -1,8 +1,7 @@
-#include
-#include           // OpenGL graphics and input
+// #include           // OpenGL graphics and input
 #include "chip8.h" // Your cpu core implementation
 
-chip8 myChip8;
+Chip8 myChip8;
 
 int main(int argc, char **argv)
 {
@@ -21,7 +20,7 @@ int main(int argc, char **argv)
         myChip8.emulateCycle();
 
         // If the draw flag is set, update the screen
-        if (myChip8.drawFlag) // Only two opcodes should set this flag: 0x00E0 (Clears the screen) and 0xDXYN (Draws a sprite on the screen)
+        if (myChip8.draw_flag) // Only two opcodes should set this flag: 0x00E0 (Clears the screen) and 0xDXYN (Draws a sprite on the screen)
             drawGraphics();
 
         // Store key press state (Press and Release)
