@@ -2,6 +2,7 @@
 
 void Chip8::initialize()
 {
+    printf("Initializing emulator...\n");
     program_counter = 0x200; // Program counter starts at 0x200
     opcode_ = 0;             // Reset current opcode
     index_register = 0;      // Reset index register
@@ -9,40 +10,38 @@ void Chip8::initialize()
     draw_flag = false;
 
     // Clear display
-    for (int i = 0; i < (SCREEN_WIDTH * SCREEN_HEIGHT); i++)
-    {
-        gfx[i] = 0;
-    }
+    printf("Clearing display...\n");
+    std::memset(&gfx, 0, (SCREEN_WIDTH * SCREEN_HEIGHT));
 
     // Clear stack
-    for (int i = 0; i < STACK_SIZE; i++)
-    {
-        stack[i] = 0;
-    }
+    printf("Clearing stack...\n");
+    std::memset(&stack, 0, STACK_SIZE);
 
     // Clear registers V0-VF
+    printf("Clearing General Purpose Registers...\n");
     for (int i = 0; i < GPREG_NUM; i++)
     {
-        gen_purpose_reg_v[i] = 0;
+        std::memset(&gen_purpose_reg_v[i], 0, sizeof(uint8_t));
     }
 
     // Clear memory
-    for (int i = 0; i < MEM_SIZE; i++)
-    {
-        memory_[i] = 0;
-    }
+    printf("Cleaing memory...\n");
+    std::memset(&memory_, 0, MEM_SIZE);
 
     // Load fontset
+    printf("Loading font set...\n");
     for (int i = 0; i < FONT_SET_SIZE; ++i)
         memory_[i] = chip8_fontset[i];
 
     // Reset timers
+    printf("Resetting timers...\n");
     delay_timer = 0;
     sound_timer = 0;
 }
 
 void Chip8::emulateCycle()
 {
+    printf("Fetching and Decoding OPCODE...\n");
     // Fetch opcode
     opcode_ = memory_[program_counter] << 8 | memory_[program_counter + 1];
 
@@ -51,6 +50,7 @@ void Chip8::emulateCycle()
     {
 
     case 0x0000: // 0x0NNN: Calls machine code routine (RCA 1802 for COSMAC VIP) at address NNN. Not necessary for most ROMs
+                 // TODO UJUN: Implement OPCODE
         break;
 
     case 0x00E0:
@@ -152,6 +152,7 @@ void Chip8::emulateCycle()
 
         case 0x0005: // 8XY5: VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there is not
             // TODO UJUN: Execute opcode
+            program_counter += 2;
             break;
 
         case 0x0006: // 8XY6: Stores the least significant bit of VX in VF and then shifts VX to the right by 1
@@ -162,6 +163,7 @@ void Chip8::emulateCycle()
 
         case 0x0007: // 8XY7: Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there is not
             // TODO UJUN: Execute opcode
+            program_counter += 2;
             break;
 
         case 0x000E: // 89XYE:  Stores the most significant bit of VX in VF and then shifts VX to the left by 1
@@ -192,10 +194,12 @@ void Chip8::emulateCycle()
         break;
 
     case 0xC000: // CXNN: Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN
+    {
         srand(time(NULL));
         uint8_t _rand_ = rand() % 255;
         gen_purpose_reg_v[(opcode_ & 0xF00) >> 8] = _rand_ & (opcode_ & 0xFF);
         program_counter += 2;
+    }
         break;
 
     case 0xD000: // DXYN: Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels.
@@ -248,6 +252,7 @@ void Chip8::emulateCycle()
             printf("Unknown opcode [0xE000]: 0x%X\n", opcode_);
             break;
         }
+        break;
 
     case 0xF000:
         switch (opcode_ & 0x00FF)
@@ -330,11 +335,102 @@ void Chip8::emulateCycle()
     }
 }
 
-void Chip8::loadGame(char16_t game_name)
+void Chip8::loadGame(char *game_name)
 {
-    // TODO UJUN: Use fopen in binary mode) and start filling the memory at location: 0x200 == 512
-    for (int i = 0; i < bufferSize; ++i)
-        memory_[i + 512] = buffer[i];
+    // Use fopen (in binary mode) and start filling the memory at location: 0x200 == 512
+    printf("Loading game into memory...\n");
+    FILE *fp = std::fopen(game_name, "w+b");
+    if (!fp)
+    {
+        std::perror("File opening failed");
+    }
+    int c;
+    int i{0};
+    while ((c = std::fgetc(fp)) != EOF) // standard C I/O file reading loop
+    {
+        memory_[i + 512] = (uint8_t)c;
+        i++;
+    }
+    printf("Game Loaded!\n");
+}
+
+void Chip8::setKeys()
+{
+    printf("Fetching pressed key...\n");
+    std::memset(&key, 0, KEY_NUM);
+
+    char _char_;
+    std::cin >> _char_;
+    switch (_char_)
+    {
+    case '1':
+        key[0] = 1;
+        break;
+
+    case '2':
+        key[1] = 1;
+        break;
+
+    case '3':
+        key[2] = 1;
+        break;
+
+    case '4':
+        key[3] = 1;
+        break;
+
+    case 'q':
+        key[4] = 1;
+        break;
+
+    case 'w':
+        key[5] = 1;
+        break;
+
+    case 'e':
+        key[6] = 1;
+        break;
+
+    case 'r':
+        key[7] = 1;
+        break;
+
+    case 'a':
+        key[8] = 1;
+        break;
+
+    case 's':
+        key[9] = 1;
+        break;
+
+    case 'd':
+        key[10] = 1;
+        break;
+
+    case 'f':
+        key[11] = 1;
+        break;
+
+    case 'z':
+        key[12] = 1;
+        break;
+
+    case 'x':
+        key[13] = 1;
+        break;
+
+    case 'c':
+        key[14] = 1;
+        break;
+
+    case 'v':
+        key[15] = 1;
+        break;
+
+    default:
+        printf("Unknown key: %c\n", _char_);
+        break;
+    }
 }
 
 /*

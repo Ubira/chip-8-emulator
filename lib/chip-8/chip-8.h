@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <time.h>
 #include <iostream>
 
@@ -71,12 +72,12 @@ class Chip8
             0xF0, 0x80, 0xF0, 0x80, 0x80  // F
     };
 
-    bool draw_flag;
-
 public:
+    bool draw_flag;
     void initialize();
     void emulateCycle();
-    void loadGame(char16_t game_name);
+    void loadGame(char *game_name);
+    void setKeys();
 };
 
 #endif /* CHIP_8_H */
