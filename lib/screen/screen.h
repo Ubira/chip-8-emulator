@@ -2,6 +2,7 @@
 #define SCREEN_H
 
 #include <cstdio>
+#include <iostream>
 
 class Screen
 {

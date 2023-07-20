@@ -11,11 +11,11 @@ void Chip8::initialize()
 
     // Clear display
     printf("Clearing display...\n");
-    std::memset(&gfx, 0, (SCREEN_WIDTH * SCREEN_HEIGHT));
+    std::memset(&gfx, 0, (SCREEN_WIDTH * SCREEN_HEIGHT) * sizeof(uint8_t));
 
     // Clear stack
     printf("Clearing stack...\n");
-    std::memset(&stack, 0, STACK_SIZE);
+    std::memset(&stack, 0, STACK_SIZE * sizeof(uint16_t));
 
     // Clear registers V0-VF
     printf("Clearing General Purpose Registers...\n");
@@ -26,7 +26,7 @@ void Chip8::initialize()
 
     // Clear memory
     printf("Cleaing memory...\n");
-    std::memset(&memory_, 0, MEM_SIZE);
+    std::memset(&memory_, 0, MEM_SIZE * sizeof(u_int8_t));
 
     // Load fontset
     printf("Loading font set...\n");
@@ -41,23 +41,27 @@ void Chip8::initialize()
 
 void Chip8::emulateCycle()
 {
-    printf("Fetching and Decoding OPCODE...\n");
+    printf("Fetching and Decoding OPCODE... ");
     // Fetch opcode
     opcode_ = memory_[program_counter] << 8 | memory_[program_counter + 1];
+
+    printf("Fetched opcode: 0x%X\n", opcode_);
+    printf("program_counter: 0x%X\n", program_counter);
 
     // Decode opcode
     switch (opcode_ & 0xF000)
     {
 
-    case 0x0000: // 0x0NNN: Calls machine code routine (RCA 1802 for COSMAC VIP) at address NNN. Not necessary for most ROMs
-                 // TODO UJUN: Implement OPCODE
-        break;
+        // case 0x0000: // 0x0NNN: Calls machine code routine (RCA 1802 for COSMAC VIP) at address NNN. Not necessary for most ROMs
+        // TODO UJUN: Implement OPCODE
+        // printf("Unknown opcode [0x0000]: 0x%X\n", opcode_);
+        // break;
 
-    case 0x00E0:
-        switch (opcode_ & 0x000F)
+    case 0x0000:
+        switch (opcode_ & 0x0FFF)
         {
-        case 0x0000: // 0x00E0: Clears the screen
-            for (int i = 0; i < sizeof(gfx); i++)
+        case 0x00E0: // 0x00E0: Clears the screen
+            for (u_int i = 0; i < sizeof(gfx); i++)
             {
                 gfx[i] = 0;
             }
@@ -65,8 +69,8 @@ void Chip8::emulateCycle()
             program_counter += 2;
             break;
 
-        case 0x000E: // 0x00EE: Returns from subroutine
-            program_counter = stack[stack_pointer];
+        case 0x00EE: // 0x00EE: Returns from subroutine
+            program_counter = stack[stack_pointer - 1];
             stack_pointer--;
             program_counter += 2;
             break;
@@ -88,14 +92,14 @@ void Chip8::emulateCycle()
         break;
 
     case 0x3000: // 3XNN: Skips the next instruction if VX equals NN (usually the next instruction is a jump to skip a code block)
-        if (gen_purpose_reg_v[opcode_ & 0x0F00 >> 8] == opcode_ & 0xFF)
+        if (gen_purpose_reg_v[opcode_ & 0x0F00 >> 8] == (opcode_ & 0xFF))
             program_counter += 4;
         else
             program_counter += 2;
         break;
 
     case 0x4000: // 4XNN: Skips the next instruction if VX does not equal NN (usually the next instruction is a jump to skip a code block)
-        if (gen_purpose_reg_v[opcode_ & 0x0F00 >> 8] != opcode_ & 0xFF)
+        if (gen_purpose_reg_v[opcode_ & 0x0F00 >> 8] != (opcode_ & 0xFF))
             program_counter += 4;
         else
             program_counter += 2;
@@ -151,7 +155,15 @@ void Chip8::emulateCycle()
             break;
 
         case 0x0005: // 8XY5: VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there is not
-            // TODO UJUN: Execute opcode
+            gen_purpose_reg_v[0xF] = 1;
+            for (u_int i = 0; i < sizeof(gen_purpose_reg_v[0]); i++)
+            {
+                if (!(gen_purpose_reg_v[(opcode_ & 0x0F00) >> 8]) && (gen_purpose_reg_v[(opcode_ & 0x00F0) >> 4]))
+                {
+                    gen_purpose_reg_v[0xF] = 0;
+                }
+            }
+            gen_purpose_reg_v[(opcode_ & 0x0F00) >> 8] -= gen_purpose_reg_v[(opcode_ & 0x00F0) >> 4];
             program_counter += 2;
             break;
 
@@ -162,7 +174,15 @@ void Chip8::emulateCycle()
             break;
 
         case 0x0007: // 8XY7: Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there is not
-            // TODO UJUN: Execute opcode
+            gen_purpose_reg_v[0xF] = 1;
+            for (u_int i = 0; i < sizeof(gen_purpose_reg_v[0]); i++)
+            {
+                if ((gen_purpose_reg_v[(opcode_ & 0x0F00) >> 8]) && !(gen_purpose_reg_v[(opcode_ & 0x00F0) >> 4]))
+                {
+                    gen_purpose_reg_v[0xF] = 0;
+                }
+            }
+            gen_purpose_reg_v[(opcode_ & 0x0F00) >> 8] = gen_purpose_reg_v[(opcode_ & 0x00F0) >> 4] - gen_purpose_reg_v[(opcode_ & 0x0F00) >> 8];
             program_counter += 2;
             break;
 
@@ -190,7 +210,7 @@ void Chip8::emulateCycle()
         break;
 
     case 0xB000: // BNNN: Jumps to the address NNN plus V0
-        program_counter = opcode_ & 0xFFF + gen_purpose_reg_v[0];
+        program_counter = (opcode_ & 0xFFF) + gen_purpose_reg_v[0];
         break;
 
     case 0xC000: // CXNN: Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN
@@ -339,7 +359,7 @@ void Chip8::loadGame(char *game_name)
 {
     // Use fopen (in binary mode) and start filling the memory at location: 0x200 == 512
     printf("Loading game into memory...\n");
-    FILE *fp = std::fopen(game_name, "w+b");
+    FILE *fp = std::fopen(game_name, "r+b");
     if (!fp)
     {
         std::perror("File opening failed");
@@ -349,8 +369,10 @@ void Chip8::loadGame(char *game_name)
     while ((c = std::fgetc(fp)) != EOF) // standard C I/O file reading loop
     {
         memory_[i + 512] = (uint8_t)c;
+        printf("memory_[%d]: %x\n", i + 512, memory_[i + 512]);
         i++;
     }
+    fclose(fp);
     printf("Game Loaded!\n");
 }
 
