@@ -46,7 +46,7 @@ void Chip8::emulateCycle()
     opcode_ = memory_[program_counter] << 8 | memory_[program_counter + 1];
 
     printf("Fetched opcode: 0x%X\n", opcode_);
-    printf("program_counter: 0x%X\n", program_counter);
+    // printf("program_counter: 0x%X\n", program_counter);
 
     // Decode opcode
     switch (opcode_ & 0xF000)
@@ -376,85 +376,157 @@ void Chip8::loadGame(char *game_name)
     printf("Game Loaded!\n");
 }
 
-void Chip8::setKeys()
+void Chip8::setKeyDown(int key_down)
 {
     printf("Fetching pressed key...\n");
-    std::memset(&key, 0, KEY_NUM);
 
-    char _char_;
-    std::cin >> _char_;
-    switch (_char_)
+    switch (key_down)
     {
-    case '1':
+    case 49: // 1
         key[0] = 1;
         break;
 
-    case '2':
+    case 50: // 2
         key[1] = 1;
         break;
 
-    case '3':
+    case 51: // 3
         key[2] = 1;
         break;
 
-    case '4':
+    case 52: // 4
         key[3] = 1;
         break;
 
-    case 'q':
+    case 81: // q
         key[4] = 1;
         break;
 
-    case 'w':
+    case 87: // w
         key[5] = 1;
         break;
 
-    case 'e':
+    case 69: // e
         key[6] = 1;
         break;
 
-    case 'r':
+    case 82: // r
         key[7] = 1;
         break;
 
-    case 'a':
+    case 65: // a
         key[8] = 1;
         break;
 
-    case 's':
+    case 83: // s
         key[9] = 1;
         break;
 
-    case 'd':
+    case 68: // d
         key[10] = 1;
         break;
 
-    case 'f':
+    case 70: // f
         key[11] = 1;
         break;
 
-    case 'z':
+    case 90: // z
         key[12] = 1;
         break;
 
-    case 'x':
+    case 88: // x
         key[13] = 1;
         break;
 
-    case 'c':
+    case 67: // c
         key[14] = 1;
         break;
 
-    case 'v':
+    case 86: // v
         key[15] = 1;
         break;
 
     default:
-        printf("Unknown key: %c\n", _char_);
+        printf("Unknown key: %d\n", key_down);
         break;
     }
 }
 
+void Chip8::setKeyUp(int key_up)
+{
+    printf("Fetching released key...\n");
+
+    switch (key_up)
+    {
+    case 49: // 1
+        key[0] = 0;
+        break;
+
+    case 50: // 2
+        key[1] = 0;
+        break;
+
+    case 51: // 3
+        key[2] = 0;
+        break;
+
+    case 52: // 4
+        key[3] = 0;
+        break;
+
+    case 81: // q
+        key[4] = 0;
+        break;
+
+    case 87: // w
+        key[5] = 0;
+        break;
+
+    case 69: // e
+        key[6] = 0;
+        break;
+
+    case 82: // r
+        key[7] = 0;
+        break;
+
+    case 65: // a
+        key[8] = 0;
+        break;
+
+    case 83: // s
+        key[9] = 0;
+        break;
+
+    case 68: // d
+        key[10] = 0;
+        break;
+
+    case 70: // f
+        key[11] = 0;
+        break;
+
+    case 90: // z
+        key[12] = 0;
+        break;
+
+    case 88: // x
+        key[13] = 0;
+        break;
+
+    case 67: // c
+        key[14] = 0;
+        break;
+
+    case 86: // v
+        key[15] = 0;
+        break;
+
+    default:
+        printf("Unknown key: %d\n", key_up);
+        break;
+    }
+}
 /*
 OPCODES
 

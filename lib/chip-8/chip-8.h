@@ -32,7 +32,6 @@ class Chip8
         0x200-0xFFF - Program ROM and work RAM
     */
 
-    uint8_t gfx[SCREEN_WIDTH * SCREEN_HEIGHT]; // 64 x 32 = 2048 pixels screen
     uint8_t delay_timer;
     uint8_t sound_timer;
 
@@ -74,10 +73,12 @@ class Chip8
 
 public:
     bool draw_flag;
+    uint8_t gfx[SCREEN_WIDTH * SCREEN_HEIGHT]; // 64 x 32 = 2048 pixels screen
     void initialize();
     void emulateCycle();
     void loadGame(char *game_name);
-    void setKeys();
+    void setKeyDown(int key_down);
+    void setKeyUp(int key_up);
 };
 
 #endif /* CHIP_8_H */
