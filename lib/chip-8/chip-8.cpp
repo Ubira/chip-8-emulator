@@ -369,11 +369,13 @@ void Chip8::loadGame(char *game_name)
     while ((c = std::fgetc(fp)) != EOF) // standard C I/O file reading loop
     {
         memory_[i + 512] = (uint8_t)c;
-        printf("memory_[%d]: %x\n", i + 512, memory_[i + 512]);
         i++;
     }
     fclose(fp);
     printf("Game Loaded!\n");
+    printf("Printing memory layout!\n");
+    for (int i = 0; i < MEM_SIZE; i++)
+        printf("memory_[%d]: %x\n", i, memory_[i]);
 }
 
 void Chip8::setKeyDown(int key_down)

@@ -6,7 +6,7 @@ void Screen::drawGraphics(wxDC &dc, Chip8 chip8)
     for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++)
     {
         int x = (i % SCREEN_WIDTH) * 20 + 10;
-        int y = (i / SCREEN_WIDTH) * 20 + 10;
+        int y = -(i / SCREEN_WIDTH) * 20 + 640;
 
         if (chip8.gfx[i] == 1)
             dc.SetPen(wxPen(wxColor(0, 0, 0), 10));
@@ -43,7 +43,7 @@ bool MyApp::OnInit()
 
     // Initialize the Chip8 system and load the game into the memory
     drawPane->myChip8.initialize();                 // Clear the memory, registers and screen
-    drawPane->myChip8.loadGame("../roms/pong.ch8"); // Copy the program into the memory
+    drawPane->myChip8.loadGame("../roms/Chip8Picture.ch8"); // Copy the program into the memory
 
     return true;
 }
@@ -141,9 +141,9 @@ void BasicDrawPane::render(wxDC &dc)
     {
         myChip8.draw_flag = false;
     }
-
     myScreen.drawGraphics(dc, myChip8);
     Update();
+
     Refresh();
-    usleep(10000);
+    // usleep(10000);
 }
