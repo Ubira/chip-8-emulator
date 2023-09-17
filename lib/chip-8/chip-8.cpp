@@ -43,7 +43,7 @@ void Chip8::emulateCycle()
 {
     printf("Fetching and Decoding OPCODE... ");
     // Fetch opcode
-    opcode_ = memory_[program_counter] << 8 | memory_[program_counter + 1];
+    opcode_ = (memory_[program_counter] << 8) | memory_[program_counter + 1];
 
     printf("Fetched opcode: 0x%X\n", opcode_);
     // printf("program_counter: 0x%X\n", program_counter);
@@ -92,33 +92,33 @@ void Chip8::emulateCycle()
         break;
 
     case 0x3000: // 3XNN: Skips the next instruction if VX equals NN (usually the next instruction is a jump to skip a code block)
-        if (gen_purpose_reg_v[opcode_ & 0x0F00 >> 8] == (opcode_ & 0xFF))
+        if (gen_purpose_reg_v[(opcode_ & 0x0F00) >> 8] == (opcode_ & 0xFF))
             program_counter += 4;
         else
             program_counter += 2;
         break;
 
     case 0x4000: // 4XNN: Skips the next instruction if VX does not equal NN (usually the next instruction is a jump to skip a code block)
-        if (gen_purpose_reg_v[opcode_ & 0x0F00 >> 8] != (opcode_ & 0xFF))
+        if (gen_purpose_reg_v[(opcode_ & 0x0F00) >> 8] != (opcode_ & 0xFF))
             program_counter += 4;
         else
             program_counter += 2;
         break;
 
     case 0x5000: // 5XY0: Skips the next instruction if VX equals VY (usually the next instruction is a jump to skip a code block)
-        if (gen_purpose_reg_v[opcode_ & 0x0F00 >> 8] == gen_purpose_reg_v[opcode_ & 0x00F0 >> 4])
+        if (gen_purpose_reg_v[(opcode_ & 0x0F00) >> 8] == gen_purpose_reg_v[(opcode_ & 0x00F0) >> 4])
             program_counter += 4;
         else
             program_counter += 2;
         break;
 
     case 0x6000: // 6XNN: Sets VX to NN
-        gen_purpose_reg_v[opcode_ & 0xF00 >> 8] = opcode_ & 0xFF;
+        gen_purpose_reg_v[(opcode_ & 0xF00) >> 8] = opcode_ & 0xFF;
         program_counter += 2;
         break;
 
     case 0x7000: // 7XNN: Adds NN to VX (carry flag is not changed)
-        gen_purpose_reg_v[opcode_ & 0xF00 >> 8] += opcode_ & 0xFF;
+        gen_purpose_reg_v[(opcode_ & 0xF00) >> 8] += opcode_ & 0xFF;
         program_counter += 2;
         break;
 
@@ -198,7 +198,7 @@ void Chip8::emulateCycle()
         break;
 
     case 0x9000: // 9XY0: Skips the next instruction if VX does not equal VY. (Usually the next instruction is a jump to skip a code block)
-        if (gen_purpose_reg_v[opcode_ & 0x0F00 >> 8] != gen_purpose_reg_v[opcode_ & 0x00F0 >> 4])
+        if (gen_purpose_reg_v[(opcode_ & 0x0F00) >> 8] != gen_purpose_reg_v[(opcode_ & 0x00F0) >> 4])
             program_counter += 4;
         else
             program_counter += 2;
@@ -373,9 +373,6 @@ void Chip8::loadGame(char *game_name)
     }
     fclose(fp);
     printf("Game Loaded!\n");
-    printf("Printing memory layout!\n");
-    for (int i = 0; i < MEM_SIZE; i++)
-        printf("memory_[%d]: %x\n", i, memory_[i]);
 }
 
 void Chip8::setKeyDown(int key_down)

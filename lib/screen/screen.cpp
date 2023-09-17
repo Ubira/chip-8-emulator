@@ -43,7 +43,7 @@ bool MyApp::OnInit()
 
     // Initialize the Chip8 system and load the game into the memory
     drawPane->myChip8.initialize();                 // Clear the memory, registers and screen
-    drawPane->myChip8.loadGame("../roms/Chip8Picture.ch8"); // Copy the program into the memory
+    drawPane->myChip8.loadGame((char *)"../roms/Chip8Picture.ch8"); // Copy the program into the memory
 
     return true;
 }
