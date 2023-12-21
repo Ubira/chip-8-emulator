@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <iostream>
 #include <unistd.h>
+#include <SDL2/SDL.h>
 #include "chip-8.h"
 
 class Screen
@@ -11,7 +12,7 @@ class Screen
 public:
     void setupGraphics();
     void setupInput();
-    void drawGraphics(Chip8 chip8);
+    void drawGraphics(SDL_Renderer* renderer, SDL_Rect* rect, Chip8 chip8);
 };
 
 #endif /* SCREEN_H */
