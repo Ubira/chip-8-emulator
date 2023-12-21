@@ -381,67 +381,67 @@ void Chip8::setKeyDown(int key_down)
 
     switch (key_down)
     {
-    case 49: // 1
+    case SDLK_1: // 1
         key[0] = 1;
         break;
 
-    case 50: // 2
+    case SDLK_2: // 2
         key[1] = 1;
         break;
 
-    case 51: // 3
+    case SDLK_3: // 3
         key[2] = 1;
         break;
 
-    case 52: // 4
+    case SDLK_4: // 4
         key[3] = 1;
         break;
 
-    case 81: // q
+    case SDLK_q: // q
         key[4] = 1;
         break;
 
-    case 87: // w
+    case SDLK_w: // w
         key[5] = 1;
         break;
 
-    case 69: // e
+    case SDLK_e: // e
         key[6] = 1;
         break;
 
-    case 82: // r
+    case SDLK_r: // r
         key[7] = 1;
         break;
 
-    case 65: // a
+    case SDLK_a: // a
         key[8] = 1;
         break;
 
-    case 83: // s
+    case SDLK_s: // s
         key[9] = 1;
         break;
 
-    case 68: // d
+    case SDLK_d: // d
         key[10] = 1;
         break;
 
-    case 70: // f
+    case SDLK_f: // f
         key[11] = 1;
         break;
 
-    case 90: // z
+    case SDLK_z: // z
         key[12] = 1;
         break;
 
-    case 88: // x
+    case SDLK_x: // x
         key[13] = 1;
         break;
 
-    case 67: // c
+    case SDLK_c: // c
         key[14] = 1;
         break;
 
-    case 86: // v
+    case SDLK_v: // v
         key[15] = 1;
         break;
 
@@ -457,67 +457,67 @@ void Chip8::setKeyUp(int key_up)
 
     switch (key_up)
     {
-    case 49: // 1
+    case SDLK_1: // 1
         key[0] = 0;
         break;
 
-    case 50: // 2
+    case SDLK_2: // 2
         key[1] = 0;
         break;
 
-    case 51: // 3
+    case SDLK_3: // 3
         key[2] = 0;
         break;
 
-    case 52: // 4
+    case SDLK_4: // 4
         key[3] = 0;
         break;
 
-    case 81: // q
+    case SDLK_q: // q
         key[4] = 0;
         break;
 
-    case 87: // w
+    case SDLK_w: // w
         key[5] = 0;
         break;
 
-    case 69: // e
+    case SDLK_e: // e
         key[6] = 0;
         break;
 
-    case 82: // r
+    case SDLK_r: // r
         key[7] = 0;
         break;
 
-    case 65: // a
+    case SDLK_a: // a
         key[8] = 0;
         break;
 
-    case 83: // s
+    case SDLK_s: // s
         key[9] = 0;
         break;
 
-    case 68: // d
+    case SDLK_d: // d
         key[10] = 0;
         break;
 
-    case 70: // f
+    case SDLK_f: // f
         key[11] = 0;
         break;
 
-    case 90: // z
+    case SDLK_z: // z
         key[12] = 0;
         break;
 
-    case 88: // x
+    case SDLK_x: // x
         key[13] = 0;
         break;
 
-    case 67: // c
+    case SDLK_c: // c
         key[14] = 0;
         break;
 
-    case 86: // v
+    case SDLK_v: // v
         key[15] = 0;
         break;
 

@@ -15,6 +15,7 @@
 #include <cstring>
 #include <time.h>
 #include <iostream>
+#include <SDL2/SDL.h>
 
 class Chip8
 {

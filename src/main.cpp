@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-constexpr int LOOP_DURATION = 1000 / 270; // 60 FPS 
+constexpr int LOOP_DURATION = 1000 / 120; // 60 FPS 
 
 Screen myScreen;
 Chip8 myChip8;
@@ -62,10 +62,20 @@ int main(int argc, char **argv)
         // Store key press state (Press and Release)
         // myChip8.setKeys();
 
-	    if (SDL_PollEvent(&e)) {
-		    if (e.type == SDL_QUIT) {
-			    break;
-		    }
+	    if (SDL_PollEvent(&e))
+        {
+		    if (e.type == SDL_QUIT)
+            {
+                break;
+		    } 
+            else if (e.type == SDL_KEYDOWN)
+            {
+                    myChip8.setKeyDown(e.key.keysym.sym);
+            }
+            else if (e.type == SDL_KEYUP)
+            {
+                    myChip8.setKeyUp(e.key.keysym.sym);
+            }
 	    }
 
 		SDL_RenderPresent(renderer);
